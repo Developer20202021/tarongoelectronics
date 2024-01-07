@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "282479122364",
+    "project_id": "tarongoelectronics",
+    "storage_bucket": "tarongoelectronics.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:282479122364:android:69b54e66a56915a3433db9",
+        "android_client_info": {
+          "package_name": "com.inansoft.tarongoelectronics"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBcQNjy4CzCJ_hwnwGqJuqkb5PITNadPug"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
