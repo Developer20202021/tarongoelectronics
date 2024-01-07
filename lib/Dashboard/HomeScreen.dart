@@ -1,10 +1,12 @@
+import 'dart:convert';
+
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
-
+import 'package:http/http.dart' as http;
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:input_quantity/input_quantity.dart';
 import 'package:uuid/uuid.dart';
@@ -39,6 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
    TextEditingController DiscountAmountController= TextEditingController();
    TextEditingController CashInController= TextEditingController();
    TextEditingController InterestController= TextEditingController();
+   TextEditingController FileNoController = TextEditingController();
 
 
 
@@ -686,6 +689,11 @@ Future<void> getSearchProductInfo(String ProductVisibleID) async {
                               label: Text('Edit'),
                               numeric: true,
                             ),
+
+                            DataColumn(
+                              label: Text('Details'),
+                              numeric: true,
+                            ),
                           ],
                           rows: List<DataRow>.generate(
                               AllProductInfoData.length,
@@ -1055,6 +1063,38 @@ Future<void> getSearchProductInfo(String ProductVisibleID) async {
                             ),
 
                 
+                Container(
+                  width: 300,
+                  child: TextField(
+                    onChanged: (value) {},
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'File No',
+
+                      hintText: 'File No',
+
+                      //  enabledBorder: OutlineInputBorder(
+                      //       borderSide: BorderSide(width: 3, color: Colors.greenAccent),
+                      //     ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            width: 3, color: Theme.of(context).primaryColor),
+                      ),
+                      errorBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(
+                            width: 3, color: Color.fromARGB(255, 66, 125, 145)),
+                      ),
+                    ),
+                    controller: FileNoController,
+                  ),
+                ),
+
+                 SizedBox(
+                              height: 20,
+                            ),
+
+                
                       CheckboxListTile(
                                       title: const Text(
                                           "Discount Available?"
@@ -1226,6 +1266,55 @@ Future<void> getSearchProductInfo(String ProductVisibleID) async {
             });
 
 
+            var CustomerType ="Due";
+
+            if (DiscountAvailable) {
+
+
+              if ((((int.parse(AllProductInfoData[index]["SalePrice"].toString())*int.parse(QtyAmount))-int.parse(CashInController.text.trim().toString()))-int.parse(DiscountAmountController.text.trim().toString()))<=0) {
+
+                setState((){
+
+                  CustomerType ="Paid";
+
+                });
+                
+              } else {
+
+                 setState((){
+
+                  CustomerType ="Due";
+
+                });
+                
+              }
+
+
+              
+            } else {
+
+
+              if ((int.parse(AllProductInfoData[index]["SalePrice"].toString())-int.parse(CashInController.text.trim().toString()))<=0) {
+
+                setState((){
+
+                  CustomerType ="Paid";
+
+                });
+                
+              } else {
+
+                setState((){
+
+                  CustomerType ="Due";
+
+                });
+                
+              }
+              
+            }
+
+
            
 
 
@@ -1243,10 +1332,11 @@ Future<void> getSearchProductInfo(String ProductVisibleID) async {
                        "Discount":DiscountAvailable?DiscountAmountController.text.trim().toString():"0",
                        "Interest":DiscountAvailable?InterestController.text.trim().toString():"0",
                        "Qty":QtyAmount,
-
+                      'CustomerType':CustomerType,
                        "Due":DiscountAvailable?(((int.parse(AllProductInfoData[index]["SalePrice"].toString())*int.parse(QtyAmount))-int.parse(CashInController.text.trim().toString()))-int.parse(DiscountAmountController.text.trim().toString())):(int.parse(AllProductInfoData[index]["SalePrice"].toString())-int.parse(CashInController.text.trim().toString())),
-
+                       "FileNo":FileNoController.text.trim(),
                        "CashIn":CashInController.text.trim().toString(),
+                       "TotalCashIn":CashInController.text.trim().toString(),
                        "TotalPrice":(int.parse(AllProductInfoData[index]["SalePrice"].toString())*int.parse(QtyAmount)).toString(),
                        "ConditionMonth":ConditionAvailable?ConditionMonthController.text.trim().toString():"0",
                         "BuyingPrice":AllProductInfoData[index]["BuyingPrice"],
@@ -1276,13 +1366,46 @@ Future<void> getSearchProductInfo(String ProductVisibleID) async {
                 };
 
 
-              await docUser.update(jsonData).then((value) => setState((){
+              await docUser.update(jsonData).then((value) => setState(() async{
 
                 loading = false;
 
                   Navigator.pop(context);
 
                   getProductInfo();
+
+
+
+                    try {
+
+                          var AdminMsg = "Dear Customer,Tarongo Electronics থেকে আপনি ${CashInController.text.trim()} টাকা দিয়ে একটি Product ক্রয় করেছেন।";
+
+
+
+                        final response = await http
+                            .get(Uri.parse('https://api.greenweb.com.bd/api.php?token=1024519252916991043295858a1b3ac3cb09ae52385b1489dff95&to=${CustomerPhoneNoController.text.trim()}&message=${AdminMsg}'));
+
+                        if (response.statusCode == 200) {
+                          // If the server did return a 200 OK response,
+                          // then parse the JSON.
+                          print(jsonDecode(response.body));
+                          
+                        
+                        } else {
+                          // If the server did not return a 200 OK response,
+                          // then throw an exception.
+                          throw Exception('Failed to load album');
+                        }
+
+
+                        } catch (e) {
+                          
+                        }
+
+
+
+
+
 
 
 
@@ -1401,6 +1524,7 @@ Future<void> getSearchProductInfo(String ProductVisibleID) async {
 
 
                                     }, child: Text("Sale"))),
+
                                     DataCell(ElevatedButton(onPressed: () async{
 
 
@@ -1761,6 +1885,68 @@ Future<void> getSearchProductInfo(String ProductVisibleID) async {
 
 
                                     }, child: Text("Edit", style: TextStyle(color: Colors.white),), style: ButtonStyle(shadowColor: MaterialStatePropertyAll(Colors.green), backgroundColor: MaterialStatePropertyAll(Colors.green),),)),
+
+                                  DataCell(ElevatedButton(onPressed: () {
+
+
+                                     showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                         
+
+                              return StatefulBuilder(
+                                      builder:(context, setState) {
+                               return AlertDialog(
+                                      title: Text('Show Details ${AllProductInfoData[index]["ProductVisibleID"].toString().toUpperCase()}'),
+                                      content: SingleChildScrollView(
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+
+                                            Text("Product ID: ${AllProductInfoData[index]["ProductVisibleID"].toString().toUpperCase()}"),
+                                            
+                                            Text("Product Name: ${AllProductInfoData[index]["ProductName"]}"),
+
+                                            Text("Product Description: ${AllProductInfoData[index]["ProductDescription"]}"),
+
+
+                                            Text("Product Buying Price: ${AllProductInfoData[index]["BuyingPrice"]}"),
+
+                                            Text("Product Sale Price: ${AllProductInfoData[index]["SalePrice"]}"),
+
+
+                                            Text("Product Stock: ${AllProductInfoData[index]["ProductAmount"]}"),
+                                          
+                                          Text("Stock Date: ${AllProductInfoData[index]["Date"]}"),
+
+
+
+                                          ],
+                                        ),
+                                      ),
+                                      actions: [
+                                        ElevatedButton(
+                                         
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: Text('CANCEL'),
+                                        ),
+
+                                       ElevatedButton(
+                                          
+                                          onPressed: () {Navigator.pop(context);},
+                                          child: Text('ACCEPT'),
+                                        ),
+                                      ],
+                                    );});});
+
+
+
+
+                                  }, child: Text("Details")))
+
                                   ]))),
                     ),
                  ),
