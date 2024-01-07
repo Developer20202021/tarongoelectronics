@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:input_quantity/input_quantity.dart';
 import 'package:uuid/uuid.dart';
 
 
@@ -34,6 +35,9 @@ class _HomeScreenState extends State<HomeScreen> {
    TextEditingController CustomerNameController = TextEditingController();
    TextEditingController CustomerPhoneNoController = TextEditingController();
    TextEditingController CustomerAddressController = TextEditingController();
+   TextEditingController ConditionMonthController = TextEditingController();
+   TextEditingController DiscountAmountController= TextEditingController();
+   TextEditingController CashInController= TextEditingController();
 
 
 
@@ -721,6 +725,8 @@ Future<void> getSearchProductInfo(String ProductVisibleID) async {
                                                   SalePriceController.text =AllProductInfoData[index]["SalePrice"];
 
                                                   BuyingPriceController.text =AllProductInfoData[index]["BuyingPrice"];
+
+                                                  var QtyAmount="1";
                                                   
                                                 
 
@@ -957,6 +963,96 @@ Future<void> getSearchProductInfo(String ProductVisibleID) async {
                               height: 20,
                             ),
 
+
+              Container(
+                  width: 300,
+                  child: TextField(
+                    readOnly: true,
+                    
+                    onChanged: (value) {},
+                    keyboardType: TextInputType.streetAddress,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'TotalPrice:${(int.parse(AllProductInfoData[index]["SalePrice"].toString())*int.parse(QtyAmount))}',
+
+                      hintText: 'TotalPrice:${(int.parse(AllProductInfoData[index]["SalePrice"].toString())*int.parse(QtyAmount))}',
+
+                      //  enabledBorder: OutlineInputBorder(
+                      //       borderSide: BorderSide(width: 3, color: Colors.greenAccent),
+                      //     ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            width: 3, color: Theme.of(context).primaryColor),
+                      ),
+                      errorBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(
+                            width: 3, color: Color.fromARGB(255, 66, 125, 145)),
+                      ),
+                    ),
+                   
+                  ),
+                ),
+
+                 SizedBox(
+                              height: 20,
+                            ),
+
+              
+               InputQty(
+                
+                  decoration: QtyDecorationProps(width: 50, contentPadding: EdgeInsets.all(20)),
+                  maxVal: 100,
+                  initVal: 1,
+                  minVal: 1,
+                  steps: 1,
+                  onQtyChanged: (val) {
+
+                    setState((){
+                      QtyAmount = val.toString();
+                    });
+                    print(val);
+                  },
+                ),
+
+
+                 SizedBox(
+                              height: 20,
+                            ),
+
+
+              
+
+              Container(
+                  width: 300,
+                  child: TextField(
+                    onChanged: (value) {},
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Cash In',
+
+                      hintText: 'Cash In',
+
+                      //  enabledBorder: OutlineInputBorder(
+                      //       borderSide: BorderSide(width: 3, color: Colors.greenAccent),
+                      //     ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            width: 3, color: Theme.of(context).primaryColor),
+                      ),
+                      errorBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(
+                            width: 3, color: Color.fromARGB(255, 66, 125, 145)),
+                      ),
+                    ),
+                    controller: CashInController,
+                  ),
+                ),
+
+                 SizedBox(
+                              height: 20,
+                            ),
+
                 
                       CheckboxListTile(
                                       title: const Text(
@@ -1003,6 +1099,72 @@ Future<void> getSearchProductInfo(String ProductVisibleID) async {
                                     ),
 
 
+                  SizedBox(
+                              height: 10,
+                            ),
+                      
+
+                DiscountAvailable?Container(
+                  width: 300,
+                  child: TextField(
+                    onChanged: (value) {},
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Discount Amount',
+
+                      hintText: 'Discount Amount',
+
+                      //  enabledBorder: OutlineInputBorder(
+                      //       borderSide: BorderSide(width: 3, color: Colors.greenAccent),
+                      //     ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            width: 3, color: Theme.of(context).primaryColor),
+                      ),
+                      errorBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(
+                            width: 3, color: Color.fromARGB(255, 66, 125, 145)),
+                      ),
+                    ),
+                    controller: DiscountAmountController,
+                  ),
+                ):Text(""),
+
+                 SizedBox(
+                              height: 10,
+                            ),
+
+                
+                ConditionAvailable?Container(
+                  width: 300,
+                  child: TextField(
+                    onChanged: (value) {},
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Condition month',
+
+                      hintText: 'Condition month',
+
+                      //  enabledBorder: OutlineInputBorder(
+                      //       borderSide: BorderSide(width: 3, color: Colors.greenAccent),
+                      //     ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            width: 3, color: Theme.of(context).primaryColor),
+                      ),
+                      errorBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(
+                            width: 3, color: Color.fromARGB(255, 66, 125, 145)),
+                      ),
+                    ),
+                    controller: ConditionMonthController,
+                  ),
+                ):Text(""),
+
+
+
 
 
 
@@ -1044,6 +1206,10 @@ Future<void> getSearchProductInfo(String ProductVisibleID) async {
                        "CustomerName":CustomerNameController.text.trim().toLowerCase(),
                        "CustomerPhoneNo":CustomerPhoneNoController.text.trim(),
                        "CustomerAddress":CustomerAddressController.text.trim(),
+                       "Discount":DiscountAvailable?DiscountAmountController.text.trim().toString():"0",
+                       "Qty":QtyAmount,
+                       "TotalPrice":(int.parse(AllProductInfoData[index]["SalePrice"].toString())*int.parse(QtyAmount)).toString(),
+                       "ConditionMonth":ConditionAvailable?ConditionMonthController.text.trim().toString():"0",
                         "BuyingPrice":AllProductInfoData[index]["BuyingPrice"],
                         "SalePrice":AllProductInfoData[index]["SalePrice"],
                         "year":"${DateTime.now().year}",
