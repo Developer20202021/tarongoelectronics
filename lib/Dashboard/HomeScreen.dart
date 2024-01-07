@@ -38,6 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
    TextEditingController ConditionMonthController = TextEditingController();
    TextEditingController DiscountAmountController= TextEditingController();
    TextEditingController CashInController= TextEditingController();
+   TextEditingController InterestController= TextEditingController();
 
 
 
@@ -1001,7 +1002,7 @@ Future<void> getSearchProductInfo(String ProductVisibleID) async {
                InputQty(
                 
                   decoration: QtyDecorationProps(width: 50, contentPadding: EdgeInsets.all(20)),
-                  maxVal: 100,
+                  maxVal: double.parse(AllProductInfoData[index]["ProductAmount"].toString()),
                   initVal: 1,
                   minVal: 1,
                   steps: 1,
@@ -1136,6 +1137,38 @@ Future<void> getSearchProductInfo(String ProductVisibleID) async {
                             ),
 
                 
+                 DiscountAvailable?Container(
+                  width: 300,
+                  child: TextField(
+                    onChanged: (value) {},
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Interest',
+
+                      hintText: 'Interest',
+
+                      //  enabledBorder: OutlineInputBorder(
+                      //       borderSide: BorderSide(width: 3, color: Colors.greenAccent),
+                      //     ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            width: 3, color: Theme.of(context).primaryColor),
+                      ),
+                      errorBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(
+                            width: 3, color: Color.fromARGB(255, 66, 125, 145)),
+                      ),
+                    ),
+                    controller: InterestController,
+                  ),
+                ):Text(""),
+
+                 SizedBox(
+                              height: 10,
+                            ),
+
+                
                 ConditionAvailable?Container(
                   width: 300,
                   child: TextField(
@@ -1198,6 +1231,7 @@ Future<void> getSearchProductInfo(String ProductVisibleID) async {
 
             var updateData =
                       {
+                        "CustomerID":ProductUniqueID,
                         "ProductName":ProductNameController.text.trim().toString(),
                         "ProductDescription":ProductDescriptionController.text.trim().toString(),
                        "ProductUniqueID":AllProductInfoData[index]["ProductUniqueID"],
@@ -1207,7 +1241,12 @@ Future<void> getSearchProductInfo(String ProductVisibleID) async {
                        "CustomerPhoneNo":CustomerPhoneNoController.text.trim(),
                        "CustomerAddress":CustomerAddressController.text.trim(),
                        "Discount":DiscountAvailable?DiscountAmountController.text.trim().toString():"0",
+                       "Interest":DiscountAvailable?InterestController.text.trim().toString():"0",
                        "Qty":QtyAmount,
+
+                       "Due":DiscountAvailable?(((int.parse(AllProductInfoData[index]["SalePrice"].toString())*int.parse(QtyAmount))-int.parse(CashInController.text.trim().toString()))-int.parse(DiscountAmountController.text.trim().toString())):(int.parse(AllProductInfoData[index]["SalePrice"].toString())-int.parse(CashInController.text.trim().toString())),
+
+                       "CashIn":CashInController.text.trim().toString(),
                        "TotalPrice":(int.parse(AllProductInfoData[index]["SalePrice"].toString())*int.parse(QtyAmount)).toString(),
                        "ConditionMonth":ConditionAvailable?ConditionMonthController.text.trim().toString():"0",
                         "BuyingPrice":AllProductInfoData[index]["BuyingPrice"],
@@ -1216,11 +1255,54 @@ Future<void> getSearchProductInfo(String ProductVisibleID) async {
                         "month":"${DateTime.now().month}/${DateTime.now().year}",
                         "Date":"${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}",
                         "DateTime":DateTime.now().toIso8601String(),
+                        "PaymentGivingDay":DateTime.now().day==31?"30":"${DateTime.now().day}"
                         };
 
                   final StudentInfo = FirebaseFirestore.instance.collection('ProductSaleInfo').doc(ProductUniqueID);
                   
-                  StudentInfo.set(updateData).then((value) =>setState(() {
+                  StudentInfo.set(updateData).then((value) =>setState(() async{
+
+
+
+
+
+                    final docUser = FirebaseFirestore.instance.collection("ProductInfo").doc(AllProductInfoData[index]["ProductUniqueID"]);
+
+                final jsonData ={
+
+                    "ProductAmount":(int.parse(AllProductInfoData[index]["ProductAmount"].toString())-int.parse(QtyAmount)).toString(),
+                
+                  
+                };
+
+
+              await docUser.update(jsonData).then((value) => setState((){
+
+                loading = false;
+
+                  Navigator.pop(context);
+
+                  getProductInfo();
+
+
+
+              })).onError((error, stackTrace) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              backgroundColor: Colors.red,
+                        content: const Text('Something Wrong!'),
+                        action: SnackBarAction(
+                          label: 'Undo',
+                          onPressed: () {
+                            // Some code to undo the change.
+                          },
+                        ),
+                      )));
+
+
+
+
+
+
+
                                         
 
                                   // Navigator.pop(context);
