@@ -11,6 +11,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:input_quantity/input_quantity.dart';
 import 'package:tarongoelectronics/Dashboard/AllCustomers.dart';
 import 'package:tarongoelectronics/Dashboard/DueCustomers.dart';
+import 'package:tarongoelectronics/Dashboard/DuePaymentAddInfo.dart';
 import 'package:uuid/uuid.dart';
 
 
@@ -574,8 +575,13 @@ Future<void> getSearchProductInfo(String ProductVisibleID) async {
 
 
                            PopupMenuItem(
+                            onTap: () {
+                                 Navigator.push(
+                        context,MaterialPageRoute(builder: (context) => PerDayDuePaymentAddHistory()),
+                      );
+                            },
                             value: '/hello',
-                            child: Text("বকেয়া বিক্রয়ের তথ্য", style: TextStyle(fontFamily: "Josefin Sans", fontWeight: FontWeight.bold),),
+                            child: Text("প্রতিদিন বকেয়া উত্তোলনের History", style: TextStyle(fontFamily: "Josefin Sans", fontWeight: FontWeight.bold),),
                           ),
 
 
@@ -588,7 +594,7 @@ Future<void> getSearchProductInfo(String ProductVisibleID) async {
 
 
 
-                  Text("Dashboard"),
+                  Text(" Taranga Electronics Dashboard"),
 
                     Row(
                   mainAxisAlignment: MainAxisAlignment.end,

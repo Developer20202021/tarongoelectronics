@@ -1029,9 +1029,16 @@ Future<void> SearchByProductIdCustomerInfo(String ProductVisibleID) async {
 
               await docUser.update(jsonData).then((value) => setState(() async{
 
-            final docUser = FirebaseFirestore.instance.collection("DuePaymentAddInfo").doc(TrxID);
+            final docUser = FirebaseFirestore.instance.collection("DuePaymentAddInfo");
 
                 final PayData ={
+                    "CustomerName":AllDueCustomerInfo[index]["InterestDue"],
+                    "CustomerPhoneNo":AllDueCustomerInfo[index]["CustomerPhoneNo"],
+                    "CustomerAddress":AllDueCustomerInfo[index]["CustomerAddress"],
+                    "CustomerID":AllDueCustomerInfo[index]["CustomerID"],
+                    "ProductVisibleID":AllDueCustomerInfo[index]["ProductVisibleID"],
+                    "ProductUniqueID":AllDueCustomerInfo[index]["ProductUniqueID"],
+                    "FileNo":AllDueCustomerInfo[index]["FileNo"],
                     "TrxID":TrxID,
                     "InterestDue":(int.parse(AllDueCustomerInfo[index]["InterestDue"])-int.parse(InterestPayController.text.trim().toString())).toString(),
                     "InterestPaid":(int.parse(AllDueCustomerInfo[index]["InterestPaid"])+int.parse(InterestPayController.text.trim().toString())).toString(),
@@ -1046,7 +1053,7 @@ Future<void> SearchByProductIdCustomerInfo(String ProductVisibleID) async {
                 };
 
 
-              await docUser.set(PayData).then((value) => setState(() async{
+              await docUser.doc(TrxID).set(PayData).then((value) => setState(() async{
 
                 loading = false;
 
