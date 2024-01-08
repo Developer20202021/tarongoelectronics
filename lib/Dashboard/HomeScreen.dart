@@ -9,6 +9,8 @@ import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:input_quantity/input_quantity.dart';
+import 'package:tarongoelectronics/Dashboard/AllCustomers.dart';
+import 'package:tarongoelectronics/Dashboard/DueCustomers.dart';
 import 'package:uuid/uuid.dart';
 
 
@@ -131,6 +133,10 @@ Future<void> getSearchProductInfo(String ProductVisibleID) async {
 
     getProductInfo();
 
+    setState(() {
+      _selectedDestination = 0;
+    });
+
     // TODO: implement initState
     super.initState();
   }
@@ -152,7 +158,7 @@ Future<void> getSearchProductInfo(String ProductVisibleID) async {
             // Important: Remove any padding from the ListView.
             padding: EdgeInsets.zero,
             children: <Widget>[
-              Padding(
+               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Text(
                   'All Menu',
@@ -165,37 +171,31 @@ Future<void> getSearchProductInfo(String ProductVisibleID) async {
               ),
               ListTile(
                 leading: Icon(Icons.favorite),
-                title: Text('Item 1'),
+                title: Text('Sale'),
                 selected: _selectedDestination == 0,
-                onTap: () => selectDestination(0),
+                onTap: (){
+                  // Navigator.of(context).push(MaterialPageRoute(builder: (context) => HomeScreen()));
+                },
               ),
               ListTile(
                 leading: Icon(Icons.delete),
-                title: Text('Item 2'),
+                title: Text('Due Customers'),
                 selected: _selectedDestination == 1,
-                onTap: () => selectDestination(1),
+                onTap: () {
+
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => DueCustomers()));
+
+                
+
+                },
               ),
               ListTile(
                 leading: Icon(Icons.label),
-                title: Text('Item 3'),
+                title: Text('All Customers'),
                 selected: _selectedDestination == 2,
-                onTap: () => selectDestination(2),
-              ),
-              Divider(
-                height: 1,
-                thickness: 1,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text(
-                  'Label',
-                ),
-              ),
-              ListTile(
-                leading: Icon(Icons.bookmark),
-                title: Text('Item A'),
-                selected: _selectedDestination == 3,
-                onTap: () => selectDestination(3),
+                onTap: (){
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => AllCustomers()));
+                },
               ),
             ],
           ),
@@ -1331,9 +1331,11 @@ Future<void> getSearchProductInfo(String ProductVisibleID) async {
                        "CustomerAddress":CustomerAddressController.text.trim(),
                        "Discount":DiscountAvailable?DiscountAmountController.text.trim().toString():"0",
                        "Interest":DiscountAvailable?InterestController.text.trim().toString():"0",
+                       "InterestDue":DiscountAvailable?InterestController.text.trim().toString():"0",
+                       "InterestPaid":"0",
                        "Qty":QtyAmount,
                       'CustomerType':CustomerType,
-                       "Due":DiscountAvailable?(((int.parse(AllProductInfoData[index]["SalePrice"].toString())*int.parse(QtyAmount))-int.parse(CashInController.text.trim().toString()))-int.parse(DiscountAmountController.text.trim().toString())):(int.parse(AllProductInfoData[index]["SalePrice"].toString())-int.parse(CashInController.text.trim().toString())),
+                       "Due":DiscountAvailable?(((int.parse(AllProductInfoData[index]["SalePrice"].toString())*int.parse(QtyAmount))-int.parse(CashInController.text.trim().toString()))-int.parse(DiscountAmountController.text.trim().toString())).toString():(int.parse(AllProductInfoData[index]["SalePrice"].toString())-int.parse(CashInController.text.trim().toString())).toString(),
                        "FileNo":FileNoController.text.trim(),
                        "CashIn":CashInController.text.trim().toString(),
                        "TotalCashIn":CashInController.text.trim().toString(),
@@ -1401,12 +1403,6 @@ Future<void> getSearchProductInfo(String ProductVisibleID) async {
                         } catch (e) {
                           
                         }
-
-
-
-
-
-
 
 
               })).onError((error, stackTrace) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -1960,11 +1956,11 @@ Future<void> getSearchProductInfo(String ProductVisibleID) async {
     );
   }
 
-  void selectDestination(int index) {
-    setState(() {
-      _selectedDestination = index;
-    });
-  }
+  // void selectDestination(int index) {
+  //   setState(() {
+  //     _selectedDestination = index;
+  //   });
+  // }
 }
 
 

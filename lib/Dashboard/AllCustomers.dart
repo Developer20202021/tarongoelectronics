@@ -4,23 +4,23 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:tarongoelectronics/Dashboard/AllCustomers.dart';
+import 'package:tarongoelectronics/Dashboard/DueCustomers.dart';
 import 'package:tarongoelectronics/Dashboard/HomeScreen.dart';
 import 'package:uuid/uuid.dart';
 
-class DueCustomers extends StatefulWidget {
+class AllCustomers extends StatefulWidget {
 
   // final int SelectedDestination;
 
 
 
-  DueCustomers({super.key,});
+  AllCustomers({super.key});
 
   @override
-  _DueCustomersState createState() => _DueCustomersState();
+  _AllCustomersState createState() => _AllCustomersState();
 }
 
-class _DueCustomersState extends State<DueCustomers> {
+class _AllCustomersState extends State<AllCustomers> {
   int _selectedDestination = 0;
 
   bool SearchByPhoneNo = true;
@@ -64,9 +64,9 @@ Future<void> getDueCustomerInfo() async {
   CollectionReference _collectionDueCustomerRef =
     FirebaseFirestore.instance.collection('ProductSaleInfo');
 
-    Query DueCustomerquery = _collectionDueCustomerRef.where("CustomerType", isEqualTo: "Due");
+    // Query DueCustomerquery = _collectionDueCustomerRef.where("CustomerType", isEqualTo: "Due");
 
-    QuerySnapshot DueCustomerquerySnapshot = await DueCustomerquery.get();
+    QuerySnapshot DueCustomerquerySnapshot = await _collectionDueCustomerRef.get();
 
     // Get data from docs and convert map to List
      AllDueCustomerInfo = DueCustomerquerySnapshot.docs.map((doc) => doc.data()).toList();
@@ -79,7 +79,7 @@ Future<void> getDueCustomerInfo() async {
 
         var DueAmount = AllDueCustomerInfo[i]["Due"];
 
-        int DueAmountInt = int.parse(DueAmount.toString());
+        int DueAmountInt = int.parse(DueAmount);
         int InterestAmount = int.parse(AllDueCustomerInfo[i]["InterestDue"]);
         int TotalCashInInt =int.parse(AllDueCustomerInfo[i]["InterestDue"]);
 
@@ -109,7 +109,7 @@ Future<void> SearchByPhoneNoCustomerInfo(String PhoneNo) async {
   CollectionReference _collectionDueCustomerRef =
     FirebaseFirestore.instance.collection('ProductSaleInfo');
 
-    Query DueCustomerquery = _collectionDueCustomerRef.where("CustomerType", isEqualTo: "Due").where("CustomerPhoneNo", isEqualTo: PhoneNo);
+    Query DueCustomerquery = _collectionDueCustomerRef.where("CustomerPhoneNo", isEqualTo: PhoneNo);
 
     QuerySnapshot DueCustomerquerySnapshot = await DueCustomerquery.get();
 
@@ -163,7 +163,7 @@ Future<void> SearchByFileNoCustomerInfo(String FileNo) async {
   CollectionReference _collectionDueCustomerRef =
     FirebaseFirestore.instance.collection('ProductSaleInfo');
 
-    Query DueCustomerquery = _collectionDueCustomerRef.where("CustomerType", isEqualTo: "Due").where("FileNo", isEqualTo: FileNo);
+    Query DueCustomerquery = _collectionDueCustomerRef.where("FileNo", isEqualTo: FileNo);
 
     QuerySnapshot DueCustomerquerySnapshot = await DueCustomerquery.get();
 
@@ -210,7 +210,7 @@ Future<void> SearchByProductIdCustomerInfo(String ProductVisibleID) async {
   CollectionReference _collectionDueCustomerRef =
     FirebaseFirestore.instance.collection('ProductSaleInfo');
 
-    Query DueCustomerquery = _collectionDueCustomerRef.where("CustomerType", isEqualTo: "Due").where("ProductVisibleID", isEqualTo: ProductVisibleID.toLowerCase());
+    Query DueCustomerquery = _collectionDueCustomerRef.where("ProductVisibleID", isEqualTo: ProductVisibleID.toLowerCase());
 
     QuerySnapshot DueCustomerquerySnapshot = await DueCustomerquery.get();
 
@@ -257,7 +257,7 @@ Future<void> SearchByProductIdCustomerInfo(String ProductVisibleID) async {
      FlutterNativeSplash.remove();
 
      setState(() {
-       _selectedDestination = 1;
+       _selectedDestination = 2;
      });
 
      getDueCustomerInfo();
@@ -279,7 +279,7 @@ Future<void> SearchByProductIdCustomerInfo(String ProductVisibleID) async {
             // Important: Remove any padding from the ListView.
             padding: EdgeInsets.zero,
             children: <Widget>[
-              Padding(
+                     Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Text(
                   'All Menu',
@@ -304,6 +304,8 @@ Future<void> SearchByProductIdCustomerInfo(String ProductVisibleID) async {
                 selected: _selectedDestination == 1,
                 onTap: () {
 
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => DueCustomers()));
+
                 
 
                 },
@@ -313,25 +315,7 @@ Future<void> SearchByProductIdCustomerInfo(String ProductVisibleID) async {
                 title: Text('All Customers'),
                 selected: _selectedDestination == 2,
                 onTap: (){
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => AllCustomers()));
-                },
-              ),
-              Divider(
-                height: 1,
-                thickness: 1,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text(
-                  'For You',
-                ),
-              ),
-              ListTile(
-                leading: Icon(Icons.bookmark),
-                title: Text('Settings'),
-                selected: _selectedDestination == 3,
-                onTap: (){
-
+                    // Navigator.of(context).push(MaterialPageRoute(builder: (context) => AllCustomers()));
                 },
               ),
             ],
@@ -347,7 +331,7 @@ Future<void> SearchByProductIdCustomerInfo(String ProductVisibleID) async {
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Due Customers"),
+                  Text("All Customers"),
 
 
 
@@ -759,10 +743,10 @@ Future<void> SearchByProductIdCustomerInfo(String ProductVisibleID) async {
                         numeric: true,
                       ),
                 
-                      DataColumn(
-                        label: Text('Pay Now'),
-                        numeric: true,
-                      ),
+                      // DataColumn(
+                      //   label: Text('Pay Now'),
+                      //   numeric: true,
+                      // ),
                 
                     ],
                     rows: List<DataRow>.generate(
@@ -798,326 +782,326 @@ Future<void> SearchByProductIdCustomerInfo(String ProductVisibleID) async {
                 
                               DataCell(Text(AllDueCustomerInfo[index]["Date"].toString())),
                 
-                              DataCell(ElevatedButton(onPressed: (){
+            //                   DataCell(ElevatedButton(onPressed: (){
 
 
 
-                                showDialog(
-                                                context: context,
-                                                builder: (context) {
+            //                     showDialog(
+            //                                     context: context,
+            //                                     builder: (context) {
 
-                                                  bool loading = false;
+            //                                       bool loading = false;
                                            
 
-                                                  return StatefulBuilder(
-                                                    builder:
-                                                        (context, setState) {
-                                                      return AlertDialog(
-                                title: Text('Pay Now'),
-                                content:loading?Center(child: CircularProgressIndicator(),):SingleChildScrollView(child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
+            //                                       return StatefulBuilder(
+            //                                         builder:
+            //                                             (context, setState) {
+            //                                           return AlertDialog(
+            //                     title: Text('Pay Now'),
+            //                     content:loading?Center(child: CircularProgressIndicator(),):SingleChildScrollView(child: Column(
+            //                       mainAxisAlignment: MainAxisAlignment.start,
+            //                       children: [
 
               
-              Container(
-                  width: 300,
-                  child: TextField(
-                    readOnly: true,
-                    onChanged: (value) {},
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      labelText: 'Phone No: ${AllDueCustomerInfo[index]["CustomerPhoneNo"]}',
+            //   Container(
+            //       width: 300,
+            //       child: TextField(
+            //         readOnly: true,
+            //         onChanged: (value) {},
+            //         keyboardType: TextInputType.number,
+            //         decoration: InputDecoration(
+            //           border: const OutlineInputBorder(),
+            //           labelText: 'Phone No: ${AllDueCustomerInfo[index]["CustomerPhoneNo"]}',
 
-                      hintText: 'Phone No: ${AllDueCustomerInfo[index]["CustomerPhoneNo"]}',
+            //           hintText: 'Phone No: ${AllDueCustomerInfo[index]["CustomerPhoneNo"]}',
 
-                      //  enabledBorder: OutlineInputBorder(
-                      //       borderSide: BorderSide(width: 3, color: Colors.greenAccent),
-                      //     ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            width: 3, color: Theme.of(context).primaryColor),
-                      ),
-                      errorBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(
-                            width: 3, color: Color.fromARGB(255, 66, 125, 145)),
-                      ),
-                    ),
-                    controller: PhoneNoController,
-                  ),
-                ),
+            //           //  enabledBorder: OutlineInputBorder(
+            //           //       borderSide: BorderSide(width: 3, color: Colors.greenAccent),
+            //           //     ),
+            //           focusedBorder: OutlineInputBorder(
+            //             borderSide: BorderSide(
+            //                 width: 3, color: Theme.of(context).primaryColor),
+            //           ),
+            //           errorBorder: const OutlineInputBorder(
+            //             borderSide: BorderSide(
+            //                 width: 3, color: Color.fromARGB(255, 66, 125, 145)),
+            //           ),
+            //         ),
+            //         controller: PhoneNoController,
+            //       ),
+            //     ),
 
                                        
-                   const SizedBox(
-                              height: 20,
-                            ),
+            //        const SizedBox(
+            //                   height: 20,
+            //                 ),
 
 
                                 
-              Container(
-                  width: 300,
-                  child: TextField(
-                    readOnly: true,
-                    onChanged: (value) {},
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      labelText: 'Total Due: ${AllDueCustomerInfo[index]["Due"]}',
+            //   Container(
+            //       width: 300,
+            //       child: TextField(
+            //         readOnly: true,
+            //         onChanged: (value) {},
+            //         keyboardType: TextInputType.number,
+            //         decoration: InputDecoration(
+            //           border: const OutlineInputBorder(),
+            //           labelText: 'Total Due: ${AllDueCustomerInfo[index]["Due"]}',
 
-                      hintText: 'Total Due: ${AllDueCustomerInfo[index]["Due"]}',
+            //           hintText: 'Total Due: ${AllDueCustomerInfo[index]["Due"]}',
 
-                      //  enabledBorder: OutlineInputBorder(
-                      //       borderSide: BorderSide(width: 3, color: Colors.greenAccent),
-                      //     ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            width: 3, color: Theme.of(context).primaryColor),
-                      ),
-                      errorBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(
-                            width: 3, color: Color.fromARGB(255, 66, 125, 145)),
-                      ),
-                    ),
-                    controller: DueAmountController,
-                  ),
-                ),
+            //           //  enabledBorder: OutlineInputBorder(
+            //           //       borderSide: BorderSide(width: 3, color: Colors.greenAccent),
+            //           //     ),
+            //           focusedBorder: OutlineInputBorder(
+            //             borderSide: BorderSide(
+            //                 width: 3, color: Theme.of(context).primaryColor),
+            //           ),
+            //           errorBorder: const OutlineInputBorder(
+            //             borderSide: BorderSide(
+            //                 width: 3, color: Color.fromARGB(255, 66, 125, 145)),
+            //           ),
+            //         ),
+            //         controller: DueAmountController,
+            //       ),
+            //     ),
 
                                        
-                   const SizedBox(
-                              height: 20,
-                            ),
+            //        const SizedBox(
+            //                   height: 20,
+            //                 ),
 
 
                     
                   
-                  Container(
-                  width: 300,
-                  child: TextField(
+            //       Container(
+            //       width: 300,
+            //       child: TextField(
                     
-                    onChanged: (value) {},
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      labelText: 'Pay Due',
+            //         onChanged: (value) {},
+            //         keyboardType: TextInputType.number,
+            //         decoration: InputDecoration(
+            //           border: const OutlineInputBorder(),
+            //           labelText: 'Pay Due',
 
-                      hintText: 'Pay Due',
+            //           hintText: 'Pay Due',
 
-                      //  enabledBorder: OutlineInputBorder(
-                      //       borderSide: BorderSide(width: 3, color: Colors.greenAccent),
-                      //     ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            width: 3, color: Theme.of(context).primaryColor),
-                      ),
-                      errorBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(
-                            width: 3, color: Color.fromARGB(255, 66, 125, 145)),
-                      ),
-                    ),
-                    controller: DueAmountPayController,
-                  ),
-                ),
+            //           //  enabledBorder: OutlineInputBorder(
+            //           //       borderSide: BorderSide(width: 3, color: Colors.greenAccent),
+            //           //     ),
+            //           focusedBorder: OutlineInputBorder(
+            //             borderSide: BorderSide(
+            //                 width: 3, color: Theme.of(context).primaryColor),
+            //           ),
+            //           errorBorder: const OutlineInputBorder(
+            //             borderSide: BorderSide(
+            //                 width: 3, color: Color.fromARGB(255, 66, 125, 145)),
+            //           ),
+            //         ),
+            //         controller: DueAmountPayController,
+            //       ),
+            //     ),
 
                                        
-                   const SizedBox(
-                              height: 20,
-                            ),
+            //        const SizedBox(
+            //                   height: 20,
+            //                 ),
 
 
                     
-                Container(
-                  width: 300,
-                  child: TextField(
-                    readOnly: true,
-                    onChanged: (value) {},
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      labelText: 'Total Interest Due: ${AllDueCustomerInfo[index]["InterestDue"]}',
+            //     Container(
+            //       width: 300,
+            //       child: TextField(
+            //         readOnly: true,
+            //         onChanged: (value) {},
+            //         keyboardType: TextInputType.number,
+            //         decoration: InputDecoration(
+            //           border: const OutlineInputBorder(),
+            //           labelText: 'Total Interest Due: ${TotalInterest}',
 
-                      hintText: 'Total Interest Due: ${AllDueCustomerInfo[index]["InterestDue"]}',
+            //           hintText: 'Total Interest Due: ${TotalInterest}',
 
-                      //  enabledBorder: OutlineInputBorder(
-                      //       borderSide: BorderSide(width: 3, color: Colors.greenAccent),
-                      //     ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            width: 3, color: Theme.of(context).primaryColor),
-                      ),
-                      errorBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(
-                            width: 3, color: Color.fromARGB(255, 66, 125, 145)),
-                      ),
-                    ),
-                    controller: InterestDueController,
-                  ),
-                ),
+            //           //  enabledBorder: OutlineInputBorder(
+            //           //       borderSide: BorderSide(width: 3, color: Colors.greenAccent),
+            //           //     ),
+            //           focusedBorder: OutlineInputBorder(
+            //             borderSide: BorderSide(
+            //                 width: 3, color: Theme.of(context).primaryColor),
+            //           ),
+            //           errorBorder: const OutlineInputBorder(
+            //             borderSide: BorderSide(
+            //                 width: 3, color: Color.fromARGB(255, 66, 125, 145)),
+            //           ),
+            //         ),
+            //         controller: InterestDueController,
+            //       ),
+            //     ),
 
                                        
-                   const SizedBox(
-                              height: 20,
-                            ),
+            //        const SizedBox(
+            //                   height: 20,
+            //                 ),
 
 
                 
-                Container(
-                  width: 300,
-                  child: TextField(
+            //     Container(
+            //       width: 300,
+            //       child: TextField(
                     
-                    onChanged: (value) {},
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      labelText: 'Interest Pay',
+            //         onChanged: (value) {},
+            //         keyboardType: TextInputType.number,
+            //         decoration: InputDecoration(
+            //           border: const OutlineInputBorder(),
+            //           labelText: 'Interest Pay',
 
-                      hintText: 'Interest Pay',
+            //           hintText: 'Interest Pay',
 
-                      //  enabledBorder: OutlineInputBorder(
-                      //       borderSide: BorderSide(width: 3, color: Colors.greenAccent),
-                      //     ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            width: 3, color: Theme.of(context).primaryColor),
-                      ),
-                      errorBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(
-                            width: 3, color: Color.fromARGB(255, 66, 125, 145)),
-                      ),
-                    ),
-                    controller: InterestPayController,
-                  ),
-                ),
+            //           //  enabledBorder: OutlineInputBorder(
+            //           //       borderSide: BorderSide(width: 3, color: Colors.greenAccent),
+            //           //     ),
+            //           focusedBorder: OutlineInputBorder(
+            //             borderSide: BorderSide(
+            //                 width: 3, color: Theme.of(context).primaryColor),
+            //           ),
+            //           errorBorder: const OutlineInputBorder(
+            //             borderSide: BorderSide(
+            //                 width: 3, color: Color.fromARGB(255, 66, 125, 145)),
+            //           ),
+            //         ),
+            //         controller: InterestPayController,
+            //       ),
+            //     ),
 
                                        
-                   const SizedBox(
-                              height: 20,
-                            ),
+            //        const SizedBox(
+            //                   height: 20,
+            //                 ),
 
 
-                                  ],
-                                ),),
-                                actions: [
-                                  ElevatedButton(
+            //                       ],
+            //                     ),),
+            //                     actions: [
+            //                       ElevatedButton(
                                    
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: Text('CANCEL'),
-                                  ),
-                                  ElevatedButton(
+            //                         onPressed: () {
+            //                           Navigator.pop(context);
+            //                         },
+            //                         child: Text('CANCEL'),
+            //                       ),
+            //                       ElevatedButton(
                                     
-                                    onPressed: () async{
+            //                         onPressed: () async{
 
-                    setState((){
-                      loading = true;
-                    });
-
-
-                int DueAmountInt = (int.parse(AllDueCustomerInfo[index]["Due"])-int.parse(DueAmountPayController.text.trim().toString()));
+            //         setState((){
+            //           loading = true;
+            //         });
 
 
-                final docUser = FirebaseFirestore.instance.collection("ProductSaleInfo").doc(AllDueCustomerInfo[index]["CustomerID"]);
-
-                final jsonData ={
-                    "InterestDue":(int.parse(AllDueCustomerInfo[index]["InterestDue"])-int.parse(InterestPayController.text.trim().toString())).toString(),
-                    "InterestPaid":(int.parse(AllDueCustomerInfo[index]["InterestPaid"])+int.parse(InterestPayController.text.trim().toString())).toString(),
-                    "Due":(int.parse(AllDueCustomerInfo[index]["Due"])-int.parse(DueAmountPayController.text.trim().toString())).toString(),
-                    "CustomerType":DueAmountInt<=0?"Paid":"Due",
-                    "TotalCashIn":(int.parse(AllDueCustomerInfo[index]["TotalCashIn"])+int.parse(DueAmountPayController.text.trim().toString())).toString(),
-                };
+            //     int DueAmountInt = (int.parse(AllDueCustomerInfo[index]["Due"])-int.parse(DueAmountPayController.text.trim().toString()));
 
 
-              await docUser.update(jsonData).then((value) => setState(() async{
+            //     final docUser = FirebaseFirestore.instance.collection("ProductSaleInfo").doc(AllDueCustomerInfo[index]["CustomerID"]);
 
-            final docUser = FirebaseFirestore.instance.collection("DuePaymentAddInfo").doc(TrxID);
-
-                final PayData ={
-                    "TrxID":TrxID,
-                    "InterestDue":(int.parse(AllDueCustomerInfo[index]["InterestDue"])-int.parse(InterestPayController.text.trim().toString())).toString(),
-                    "InterestPaid":(int.parse(AllDueCustomerInfo[index]["InterestPaid"])+int.parse(InterestPayController.text.trim().toString())).toString(),
-                    "Due":(int.parse(AllDueCustomerInfo[index]["Due"])-int.parse(DueAmountPayController.text.trim().toString())).toString(),
-                    "CustomerType":DueAmountInt<=0?"Paid":"Due",
-                    "TotalCashIn":(int.parse(AllDueCustomerInfo[index]["TotalCashIn"])+int.parse(DueAmountPayController.text.trim().toString())).toString(),
-                    "CashIn":DueAmountPayController.text.trim(),
-                    "year":"${DateTime.now().year}",
-                    "month":"${DateTime.now().month}/${DateTime.now().year}",
-                    "Date":"${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}",
-                    "DateTime":DateTime.now().toIso8601String(),
-                };
+            //     final jsonData ={
+            //         "InterestDue":(int.parse(AllDueCustomerInfo[index]["InterestDue"])-int.parse(InterestPayController.text.trim().toString())).toString(),
+            //         "InterestPaid":(int.parse(AllDueCustomerInfo[index]["InterestPaid"])+int.parse(InterestPayController.text.trim().toString())).toString(),
+            //         "Due":(int.parse(AllDueCustomerInfo[index]["Due"])-int.parse(DueAmountPayController.text.trim().toString())).toString(),
+            //         "CustomerType":DueAmountInt<=0?"Paid":"Due",
+            //         "TotalCashIn":(int.parse(AllDueCustomerInfo[index]["TotalCashIn"])+int.parse(DueAmountPayController.text.trim().toString())).toString(),
+            //     };
 
 
-              await docUser.set(PayData).then((value) => setState(() async{
+            //   await docUser.update(jsonData).then((value) => setState(() async{
 
-                loading = false;
+            // final docUser = FirebaseFirestore.instance.collection("DuePaymentAddInfo").doc(TrxID);
 
-                  Navigator.pop(context);
-                  getDueCustomerInfo();
-
-              })).onError((error, stackTrace) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              backgroundColor: Colors.red,
-                        content: const Text('Something Wrong!'),
-                        action: SnackBarAction(
-                          label: 'Undo',
-                          onPressed: () {
-                            // Some code to undo the change.
-                          },
-                        ),
-                      )));
-
-                  // Navigator.pop(context);
-                  // getDueCustomerInfo();
+            //     final PayData ={
+            //         "TrxID":TrxID,
+            //         "InterestDue":(int.parse(AllDueCustomerInfo[index]["InterestDue"])-int.parse(InterestPayController.text.trim().toString())).toString(),
+            //         "InterestPaid":(int.parse(AllDueCustomerInfo[index]["InterestPaid"])+int.parse(InterestPayController.text.trim().toString())).toString(),
+            //         "Due":(int.parse(AllDueCustomerInfo[index]["Due"])-int.parse(DueAmountPayController.text.trim().toString())).toString(),
+            //         "CustomerType":DueAmountInt<=0?"Paid":"Due",
+            //         "TotalCashIn":(int.parse(AllDueCustomerInfo[index]["TotalCashIn"])+int.parse(DueAmountPayController.text.trim().toString())).toString(),
+            //         "CashIn":DueAmountPayController.text.trim(),
+            //         "year":"${DateTime.now().year}",
+            //         "month":"${DateTime.now().month}/${DateTime.now().year}",
+            //         "Date":"${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}",
+            //         "DateTime":DateTime.now().toIso8601String(),
+            //     };
 
 
+            //   await docUser.set(PayData).then((value) => setState(() async{
 
-                    try {
+            //     loading = false;
 
-                          var AdminMsg = "Dear Customer,Tarongo Electronics এ ${DueAmountPayController.text.trim()} টাকা কিস্তি পরিশোধ করেছেন।";
+            //       Navigator.pop(context);
+            //       getDueCustomerInfo();
+
+            //   })).onError((error, stackTrace) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            //   backgroundColor: Colors.red,
+            //             content: const Text('Something Wrong!'),
+            //             action: SnackBarAction(
+            //               label: 'Undo',
+            //               onPressed: () {
+            //                 // Some code to undo the change.
+            //               },
+            //             ),
+            //           )));
+
+            //       // Navigator.pop(context);
+            //       // getDueCustomerInfo();
 
 
 
-                        final response = await http
-                            .get(Uri.parse('https://api.greenweb.com.bd/api.php?token=1024519252916991043295858a1b3ac3cb09ae52385b1489dff95&to=${AllDueCustomerInfo[index]["CustomerPhoneNo"]}&message=${AdminMsg}'));
+            //         try {
 
-                        if (response.statusCode == 200) {
-                          // If the server did return a 200 OK response,
-                          // then parse the JSON.
-                          print(jsonDecode(response.body));
+            //               var AdminMsg = "Dear Customer,Tarongo Electronics এ ${DueAmountPayController.text.trim()} টাকা কিস্তি পরিশোধ করেছেন।";
+
+
+
+            //             final response = await http
+            //                 .get(Uri.parse('https://api.greenweb.com.bd/api.php?token=1024519252916991043295858a1b3ac3cb09ae52385b1489dff95&to=${AllDueCustomerInfo[index]["CustomerPhoneNo"]}&message=${AdminMsg}'));
+
+            //             if (response.statusCode == 200) {
+            //               // If the server did return a 200 OK response,
+            //               // then parse the JSON.
+            //               print(jsonDecode(response.body));
                           
                         
-                        } else {
-                          // If the server did not return a 200 OK response,
-                          // then throw an exception.
-                          throw Exception('Failed to load album');
-                        }
+            //             } else {
+            //               // If the server did not return a 200 OK response,
+            //               // then throw an exception.
+            //               throw Exception('Failed to load album');
+            //             }
 
 
-                        } catch (e) {
+            //             } catch (e) {
                           
-                        }
+            //             }
 
 
-              })).onError((error, stackTrace) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              backgroundColor: Colors.red,
-                        content: const Text('Something Wrong!'),
-                        action: SnackBarAction(
-                          label: 'Undo',
-                          onPressed: () {
-                            // Some code to undo the change.
-                          },
-                        ),
-                      )));
+            //   })).onError((error, stackTrace) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            //   backgroundColor: Colors.red,
+            //             content: const Text('Something Wrong!'),
+            //             action: SnackBarAction(
+            //               label: 'Undo',
+            //               onPressed: () {
+            //                 // Some code to undo the change.
+            //               },
+            //             ),
+            //           )));
 
-                                      // Navigator.pop(context);
-                                    },
-                                    child: Text('Receive'),
-                                  ),
-                                ],
-                              );});});
+            //                           // Navigator.pop(context);
+            //                         },
+            //                         child: Text('Receive'),
+            //                       ),
+            //                     ],
+            //                   );});});
 
 
 
                 
-                              }, child: Text("Pay Now"))),
+            //                   }, child: Text("Pay Now"))),
                            
                             ]))),
                   ),
@@ -1131,11 +1115,9 @@ Future<void> SearchByProductIdCustomerInfo(String ProductVisibleID) async {
     );
   }
 
-  // void selectDestination(int index) {
-  //   setState(() {
-
-  //     Navigator.of(context).push(MaterialPageRoute(builder: (context) => ));
-  //     _selectedDestination = index;
-  //   });
-  // }
+  void selectDestination(int index) {
+    setState(() {
+      _selectedDestination = index;
+    });
+  }
 }
